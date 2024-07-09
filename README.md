@@ -4,6 +4,7 @@ Dataset yang digunakan ada di folder datasets
 Data Training : 
 - Hoax : HoaxData-DataTraining.xlsx
 - Real : SatkerData-DataTraining.xlsx
+
 Untuk proses learningnya menggunakan 1000 datasets dengan porsi 75 % data training dan 25 % data testing
 
 Cara jalankan :
