@@ -3,50 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Results</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <title>Model Results</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #f8f9fa;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 900px;
+        }
+        h1, h2, h3, h4, h5 {
+            text-align: center;
+        }
+        .table {
+            margin: 0 auto;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        .center {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 50%;
+        }
+        .btn-center {
+            display: flex;
+            justify-content: center;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <h1 class="text-center">Training Results</h1>
-        
+        <h1 class="my-4">Model Results</h1>
+
         {% for feature_set, models in results.items() %}
-        <div class="mt-4">
-            <h2>{{ feature_set }}</h2>
+        <h5>===========================================================================================</h5>
+            <h3>== {{ feature_set }} ==</h3>
             {% for model_name, metrics in models.items() %}
-            <div class="mt-3">
-                <h3>{{ model_name }}</h3>
-                <p><strong>Accuracy:</strong> {{ metrics.accuracy }}</p>
-                <h4>Classification Report:</h4>
-                <pre>{{ metrics.report | tojson | safe }}</pre>
-                <h4>Confusion Matrix:</h4>
+                <h4>{{ model_name }}</h4>
+                <p align="center"><strong>Accuracy:</strong> {{ metrics.accuracy }}</p>
+                <h5>Classification Report</h5>
                 <table class="table table-bordered">
-                    <tr>
-                        <th></th>
-                        <th>Predicted Fake</th>
-                        <th>Predicted Real</th>
-                    </tr>
-                    <tr>
-                        <th>Actual Fake</th>
-                        <td>{{ metrics.confusion_matrix[0][0] }}</td>
-                        <td>{{ metrics.confusion_matrix[0][1] }}</td>
-                    </tr>
-                    <tr>
-                        <th>Actual Real</th>
-                        <td>{{ metrics.confusion_matrix[1][0] }}</td>
-                        <td>{{ metrics.confusion_matrix[1][1] }}</td>
-                    </tr>
+                    <thead>
+                        <tr>
+                            <th>Label</th>
+                            <th>Precision</th>
+                            <th>Recall</th>
+                            <th>F1-Score</th>
+                            <th>Support</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for label, values in metrics.report.items() %}
+                            {% if label not in ['accuracy', 'macro avg', 'weighted avg'] %}
+                                <tr>
+                                    <td>{{ label }}</td>
+                                    <td>{{ values.precision|default('N/A') }}</td>
+                                    <td>{{ values.recall|default('N/A') }}</td>
+                                    <td>{{ values['f1-score']|default('N/A') }}</td>
+                                    <td>{{ values.support|default('N/A') }}</td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                        {% for label in ['macro avg', 'weighted avg'] %}
+                            <tr>
+                                <td>{{ label }}</td>
+                                <td>{{ metrics.report[label].precision|default('N/A') }}</td>
+                                <td>{{ metrics.report[label].recall|default('N/A') }}</td>
+                                <td>{{ metrics.report[label]['f1-score']|default('N/A') }}</td>
+                                <td>{{ metrics.report[label].support|default('N/A') }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
                 </table>
-            </div>
+                <h5>Confusion Matrix</h5>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Predicted Fake</th>
+                            <th>Predicted Real</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Actual Fake</td>
+                            <td>{{ metrics.confusion_matrix[0][0] }}</td>
+                            <td>{{ metrics.confusion_matrix[0][1] }}</td>
+                        </tr>
+                        <tr>
+                            <td>Actual Real</td>
+                            <td>{{ metrics.confusion_matrix[1][0] }}</td>
+                            <td>{{ metrics.confusion_matrix[1][1] }}</td>
+                        </tr>
+                    </tbody>
+                </table>
             {% endfor %}
-        </div>
         {% endfor %}
         
-        <div class="mt-4">
-            <h2>Chart Output</h2>
-            <img src="{{ chart_url }}" class="img-fluid" alt="Result Chart">
+        <h2>Comparison Chart</h2>
+        <img class="center" src="{{ chart_url }}" alt="Accuracy Comparison Chart" class="img-fluid">
+
+        <div class="btn-center mt-4">
+            <a href="/" class="btn btn-primary">Back to Home</a>
         </div>
-        <a href="/" class="btn btn-primary mt-4">Back to Home</a>
     </div>
 </body>
 </html>
