@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center">Training Results</h1>
+        
+        {% for feature_set, models in results.items() %}
+        <div class="mt-4">
+            <h2>{{ feature_set }}</h2>
+            {% for model_name, metrics in models.items() %}
+            <div class="mt-3">
+                <h3>{{ model_name }}</h3>
+                <p><strong>Accuracy:</strong> {{ metrics.accuracy }}</p>
+                <h4>Classification Report:</h4>
+                <pre>{{ metrics.report | tojson | safe }}</pre>
+                <h4>Confusion Matrix:</h4>
+                <table class="table table-bordered">
+                    <tr>
+                        <th></th>
+                        <th>Predicted Fake</th>
+                        <th>Predicted Real</th>
+                    </tr>
+                    <tr>
+                        <th>Actual Fake</th>
+                        <td>{{ metrics.confusion_matrix[0][0] }}</td>
+                        <td>{{ metrics.confusion_matrix[0][1] }}</td>
+                    </tr>
+                    <tr>
+                        <th>Actual Real</th>
+                        <td>{{ metrics.confusion_matrix[1][0] }}</td>
+                        <td>{{ metrics.confusion_matrix[1][1] }}</td>
+                    </tr>
+                </table>
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+        
+        <div class="mt-4">
+            <h2>Chart Output</h2>
+            <img src="{{ chart_url }}" class="img-fluid" alt="Result Chart">
+        </div>
+        <a href="/" class="btn btn-primary mt-4">Back to Home</a>
+    </div>
+</body>
+</html>

@@ -23,6 +23,9 @@
         {% if prediction_text %}
         <div class="alert alert-info mt-3">{{ prediction_text }}</div>
         {% endif %}
+        <form action="/process_and_training" method="post">
+            <button type="submit" class="btn btn-secondary mt-3">Process and Training</button>
+        </form>
     </div>
 </body>
 </html>
