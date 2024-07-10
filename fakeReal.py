@@ -10,8 +10,8 @@ import pickle
 import json
 
 # Load data
-hoax_data = pd.read_excel('datasets/HoaxData-All.xlsx', engine='openpyxl')
-real_data = pd.read_excel('datasets/SatkerData-All.xlsx', engine='openpyxl')
+hoax_data = pd.read_csv('datasets/hoax_clean.csv')
+real_data = pd.read_csv('datasets/satker_clean.csv')
 
 # Add labels
 hoax_data['label'] = 0  # 0 for fake news
@@ -20,7 +20,10 @@ real_data['label'] = 1  # 1 for real news
 # Combine datasets
 data = pd.concat([hoax_data, real_data], ignore_index=True)
 
-# Preprocess data
+# Preprocess data: Replace NaN values with empty strings
+data = data.assign(Title=data['Title'].fillna(''))
+data = data.assign(Description=data['Description'].fillna(''))
+
 X_title = data['Title']
 X_description = data['Description']
 X_both = data['Title'] + " " + data['Description']
