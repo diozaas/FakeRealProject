@@ -10,8 +10,8 @@ import pickle
 import json
 
 # Load data
-hoax_data = pd.read_excel('datasets/HoaxData-DataTraining.xlsx', engine='openpyxl')
-real_data = pd.read_excel('datasets/SatkerData-DataTraining.xlsx', engine='openpyxl')
+hoax_data = pd.read_excel('datasets/HoaxData-All.xlsx', engine='openpyxl')
+real_data = pd.read_excel('datasets/SatkerData-All.xlsx', engine='openpyxl')
 
 # Add labels
 hoax_data['label'] = 0  # 0 for fake news

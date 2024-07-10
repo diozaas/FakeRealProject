@@ -26,7 +26,7 @@ def predict():
     result = 'Real' if prediction[0] == 1 else 'Fake'
     return render_template('index.html', prediction_text=f'The news is {result}')
 
-@app.route('/process_and_training', methods=['POST'])
+@app.route('/process_and_training', methods=['GET'])
 def process_and_training():
     subprocess.run(['python', 'fakeReal.py'])
     return redirect(url_for('results'))
