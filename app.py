@@ -2,6 +2,9 @@ from flask import Flask, request, render_template, redirect, url_for
 import pickle
 import subprocess
 import json
+import nltk
+from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer
 
 # Load the trained model and vectorizer
 with open('random_forest_model.pkl', 'rb') as model_file:
@@ -18,13 +21,23 @@ def home():
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    title = request.form['title']
-    description = request.form['description']
-    combined_text = title + " " + description
-    vectorized_text = vectorizer.transform([combined_text])
-    prediction = random_forest_model.predict(vectorized_text)
-    result = 'Real' if prediction[0] == 1 else 'Fake'
-    return render_template('index.html', prediction_text=f'The news is {result}')
+    try:
+        stemmer = PorterStemmer()
+        title = request.form['title']
+        description = request.form['description']
+        combined_text = title + " " + description
+
+        combined_text = combined_text.lower()
+        tokens = nltk.word_tokenize(combined_text)
+        stemmed_text = ' '.join([stemmer.stem(token) for token in tokens])
+
+        vectorized_text = vectorizer.transform([stemmed_text])
+        prediction = random_forest_model.predict(vectorized_text)
+
+        result = 'Real' if prediction[0] == 1 else 'Fake'
+        return render_template('index.html', prediction_text=f'The news is {result}')
+    except Exception as e:
+        return str(e)  # For debugging
 
 @app.route('/process_and_training', methods=['GET'])
 def process_and_training():
